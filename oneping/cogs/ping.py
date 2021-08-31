@@ -1,3 +1,5 @@
+from json import load
+
 import discord
 from discord.ext import commands
 
@@ -29,7 +31,8 @@ class OnePing(commands.Cog):
 
     @commands.command()
     async def ping(self, ctx, *args):
-        """Ping any number of roles or user.
+        """
+        Ping any number of roles or user.
         
         Usage: combine roles or usernames with any operator followed by an optional message
         
@@ -39,6 +42,8 @@ class OnePing(commands.Cog):
         
         Example: !ping role - user message"""
 
+        with open("config.json", 'r') as config_file:
+            configs = load(config_file)
         msg = ''
         eval_lst = []
         operator = False
@@ -64,8 +69,8 @@ class OnePing(commands.Cog):
 
         # get list of members to ping
         member_lst = await parse(eval_lst)
-        tmp_role = await ctx.guild.create_role(name = "tmp role", mentionable = True, reason = f"Ping cmd from Vasily invoked by {ctx.message.author}")
-        msg = tmp_role.mention + msg
+        tmp_role = await ctx.guild.create_role(name = configs["tmp_role"], mentionable = True, reason = f"Ping cmd from Vasily invoked by {ctx.message.author}")
+        msg = tmp_role.mention + msg + f"\n- from {ctx.message.author.nick}"
 
         for member in member_lst:
             await member.add_roles(tmp_role, reason = f"Ping cmd from Vasily invoked by {ctx.message.author}")
